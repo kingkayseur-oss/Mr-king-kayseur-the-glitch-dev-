@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090812">
+<title>THE GLITCH DEV — Free Support</title>
+<style>
+:root{
+  --bg:#07070b;--card:rgba(15,14,24,.70);--line:rgba(255,255,255,.12);
+  --text:#f7f4ff;--muted:#aaa5b8;--accent:#9d5cff;--accent2:#5d2cff;
+  --danger:#ff496f;--ok:#61e6a7;--blur:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);background:#050509}
+body{overflow-x:hidden}
+#bg{
+ position:fixed;inset:0;z-index:-5;width:100%;height:100%;object-fit:cover;
+ filter:brightness(.42) saturate(.9) blur(1px);transform:scale(1.03)
+}
+#shade{position:fixed;inset:0;z-index:-4;background:
+ radial-gradient(circle at 50% 10%,rgba(157,92,255,.18),transparent 35%),
+ linear-gradient(120deg,rgba(0,0,0,.75),rgba(5,5,10,.52),rgba(0,0,0,.82))}
+#particles{position:fixed;inset:0;z-index:-3;pointer-events:none}
+.app{width:min(620px,100%);margin:auto;padding:14px 14px 28px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:42px;height:42px;border:1px solid rgba(180,120,255,.5);border-radius:14px;
+display:grid;place-items:center;background:rgba(20,14,35,.65);backdrop-filter:blur(12px);
+box-shadow:0 0 28px rgba(130,70,255,.18);font-size:20px}
+h1{font-size:20px;margin:0;font-weight:850;letter-spacing:.7px}
+.sub{font-size:11px;color:var(--muted);margin-top:2px}
+.iconbtn,.primary,.supportBtn,.bottomBtn,.cause,.save{border:0;color:var(--text);cursor:pointer}
+.iconbtn{width:42px;height:42px;border-radius:14px;background:rgba(15,14,24,.72);
+border:1px solid var(--line);backdrop-filter:blur(var(--blur));font-size:21px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:16px;
+backdrop-filter:blur(var(--blur));box-shadow:0 18px 60px rgba(0,0,0,.25);margin-bottom:12px}
+.notice{font-size:11px;line-height:1.55;color:#c4bfce;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.cause{min-height:86px;text-align:left;padding:13px;border-radius:18px;background:rgba(255,255,255,.055);
+border:1px solid rgba(255,255,255,.09);transition:.18s}
+.cause:hover,.cause.active{border-color:rgba(170,105,255,.65);background:rgba(132,71,255,.13);transform:translateY(-1px)}
+.cause b{display:block;font-size:14px}.cause span{display:block;font-size:10px;color:var(--muted);margin-top:5px;line-height:1.35}
+label{display:block;font-size:11px;color:#cfc9dc;margin:11px 0 6px}
+input,textarea,select{width:100%;border:1px solid var(--line);outline:none;border-radius:15px;
+background:rgba(0,0,0,.25);color:var(--text);padding:12px 13px;font:inherit}
+input:focus,textarea:focus,select:focus{border-color:rgba(167,101,255,.8);box-shadow:0 0 0 3px rgba(157,92,255,.08)}
+textarea{min-height:150px;resize:vertical;line-height:1.5}
+.primary{width:100%;padding:14px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+font-weight:850;margin-top:12px;box-shadow:0 12px 30px rgba(115,55,220,.22)}
+.primary:active,.bottomBtn:active{transform:scale(.985)}
+.free{font-size:13px;font-weight:900;letter-spacing:1.3px;margin:16px 4px 9px}
+.free span{color:var(--accent)}
+.bottom{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.bottomBtn{padding:13px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-weight:750}
+.footer{text-align:center;color:#8e8998;font-size:10px;margin:18px 0 4px}
+.drawer{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;display:none}
+.drawer.show{display:block}
+.panel{position:absolute;right:0;top:0;height:100%;width:min(350px,92vw);padding:18px;
+background:rgba(10,9,16,.92);border-left:1px solid var(--line);backdrop-filter:blur(25px);overflow:auto}
+.panel h2{font-size:18px;margin:4px 0 16px}.close{float:right}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.small{font-size:10px;color:var(--muted);line-height:1.5}
+.save{width:100%;padding:12px;border-radius:14px;background:rgba(157,92,255,.2);border:1px solid rgba(157,92,255,.4);margin-top:10px}
+.file{font-size:11px;padding:9px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;
+background:#171421;border:1px solid var(--line);padding:11px 15px;border-radius:14px;font-size:11px;z-index:50;transition:.25s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+@media(max-width:390px){.grid{grid-template-columns:1fr}.app{padding:10px}.card{padding:13px}}
+</style>
+</head>
+<body>
+<video id="bg" autoplay muted loop playsinline></video>
+<div id="shade"></div><canvas id="particles"></canvas>
+
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">✦</div>
+      <div><h1 id="siteName">THE GLITCH DEV</h1><div class="sub" id="subtitle">FREE SUPPORT • REPORT CENTER</div></div>
+    </div>
+    <button class="iconbtn" id="menuBtn" aria-label="Settings">⋮</button>
+  </header>
+
+  <section class="card">
+    <p class="notice" id="notice">Utilise ce formulaire uniquement pour décrire un problème réel. Vérifie les informations avant d'envoyer ton rapport.</p>
+
+    <div class="grid" id="causes">
+      <button class="cause active" data-key="harassment"><b>⚠️ Harcèlement</b><span>Messages insistants, menaces ou comportement abusif.</span></button>
+      <button class="cause" data-key="scam"><b>💸 Arnaque</b><span>Tentative d'escroquerie, faux paiement ou tromperie.</span></button>
+      <button class="cause" data-key="fraud"><b>🛡️ Fraude</b><span>Usurpation, fausse identité ou activité frauduleuse.</span></button>
+      <button class="cause" data-key="spam"><b>📨 Spam</b><span>Messages répétitifs, publicité abusive ou sollicitations.</span></button>
+    </div>
+
+    <label id="phoneLabel">Numéro WhatsApp du compte signalé</label>
+    <input id="phone" type="tel" placeholder="+242 06 000 0000" autocomplete="off">
+
+    <label id="emailLabel">Ton adresse e-mail (facultatif)</label>
+    <input id="senderEmail" type="email" placeholder="tonemail@example.com">
+
+    <label id="detailsLabel">Détails du signalement</label>
+    <textarea id="details" placeholder="Explique les faits de façon claire et précise..."></textarea>
+
+    <button class="primary" id="reportBtn">📵 GO FOR DEAD 🚀</button>
+    <p class="small" id="emailInfo">Le bouton ouvre ton application e-mail avec le script prérempli.🥀</p>
+  </section>
+
+  <div class="free" id="freeSupport">♧ FREE <span>SUPPORT 👆</span></div>
+  <div class="bottom">
+    <button class="bottomBtn" id="devBtn">✈️ Contacter le dev</button>
+    <button class="bottomBtn" id="waBtn">💬 Rejoins-moi sur WhatsApp</button>
+  </div>
+
+  <div class="footer" id="footer">Powered by Mr King Kayseur The Glitch Dev 🕷️</div>
+</main>
+
+<div class="drawer" id="drawer">
+  <aside class="panel">
+    <button class="iconbtn close" id="closeBtn">×</button>
+    <h2 id="settingsTitle">⚙️ Paramètres</h2>
+
+    <label>Nom du site</label>
+    <input id="nameInput" placeholder="THE GLITCH DEV">
+
+    <label>Langue</label>
+    <select id="langSelect">
+      <option value="fr">Français</option><option value="en">English</option>
+      <option value="es">Español</option><option value="pt">Português</option>
+      <option value="de">Deutsch</option><option value="it">Italiano</option>
+      <option value="tr">Türkçe</option><option value="ar">العربية</option>
+      <option value="sw">Kiswahili</option><option value="ln">Lingála</option>
+      <option value="zh">中文</option><option value="ja">日本語</option>
+    </select>
+
+    <label>Image / GIF / vidéo de fond</label>
+    <input class="file" id="bgFile" type="file" accept="image/*,video/*">
+    <div class="small">Choisis une image, un GIF ou une vidéo depuis ton téléphone. La vidéo est lue sans son pour que la musique du site reste séparée.</div>
+
+    <label>Musique</label>
+    <input class="file" id="musicFile" type="file" accept="audio/*">
+    <div class="row">
+      <button class="save" id="musicToggle">▶️ Musique</button>
+      <button class="save" id="resetMedia">↺ Réinitialiser</button>
+    </div>
+
+    <hr>
+    <label>Lien Telegram du dev</label>
+    <input id="telegramLink" placeholder="https://t.me/Mr_king_kayseur">
+
+    <label>Lien de ta chaîne WhatsApp</label>
+    <input id="whatsappLink" placeholder="https://whatsapp.com/channel/0029Vb8cfQn8V0te5K0atc1s">
+
+    <label>Adresse e-mail de destination</label>
+    <input id="supportEmail" value="support@whatsapp.com,android_web@support.whatsapp.com,iphone_web@support.whatsapp.com,business@support.whatsapp.com,smb_web@support.whatsapp.comabuse@whatsapp.com,privacy@whatsapp.com,press@whatsapp.com,legal@whatsapp.com" type="email">
+    <div class="small">Copie c'est adresse pour le mettre la ou mettre les adresses...🛀.</div>
+
+    <button class="save" id="saveBtn">💾 Enregistrer les réglages</button>
+  </aside>
+</div>
+
+<audio id="music" loop></audio>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const defaultData={
+ name:"THE GLITCH DEV",
+ telegram:"https://t.me/Mr_king_kayseur",
+ whatsapp:"https://whatsapp.com/channel/0029Vb8cfQn8V0te5K0atc1s",
+ email:"support@whatsapp.com,android_web@support.whatsapp.com,iphone_web@support.whatsapp.com,business@support.whatsapp.com,smb_web@support.whatsapp.comabuse@whatsapp.com,privacy@whatsapp.com,press@whatsapp.com,legal@whatsapp.com"
+};
+let data=JSON.parse(localStorage.getItem("glitchSupportSettings")||"null")||defaultData;
+let selected="harassment", bgURL="", musicURL="";
+const translations={
+fr:{sub:"FREE SUPPORT • CENTRE DE SIGNALEMENT",notice:"Utilise ce formulaire uniquement pour Fuck et Fuck des cibles. Vérifie les informations et le num avant d'envoyer ton script.",phone:"Numéro WhatsApp de la cible signalé",email:"Ton adresse e-mail (facultatif)",details:"Détails du signalement",report:"📵 go for dead 🚀",info:"Le bouton ouvre ton application e-mail avec le script prérempli. Il ne l'envoie pas automatiquement.",settings:"⚙️ Paramètres",free:"♧ FREE SUPPORT",dev:"✈️ Contacter le dev",wa:"💬 Rejoins-moi sur WhatsApp",placeholder:"Explique les faits de façon claire et précise..."},
+en:{sub:"FREE SUPPORT • REPORT CENTER",notice:"Use this form only to describe a real issue. Check the information before sending your report.",phone:"WhatsApp number of the reported account",email:"Your e-mail address (optional)",details:"Report details",report:"✉️ Report by e-mail",info:"The button opens your e-mail app with the report pre-filled. It does not send it automatically.",settings:"⚙️ Settings",free:"♧ FREE SUPPORT",dev:"✈️ Contact the dev",wa:"💬 Join me on WhatsApp",placeholder:"Explain the facts clearly and precisely..."},
+es:{sub:"SOPORTE GRATUITO • CENTRO DE REPORTES",notice:"Usa este formulario solo para describir un problema real. Revisa los datos antes de enviar.",phone:"Número de WhatsApp de la cuenta reportada",email:"Tu correo electrónico (opcional)",details:"Detalles del reporte",report:"✉️ Reportar por e-mail",info:"El botón abre tu aplicación de correo con el reporte preparado. No lo envía automáticamente.",settings:"⚙️ Ajustes",free:"♧ SOPORTE GRATUITO",dev:"✈️ Contactar al dev",wa:"💬 Únete a mi WhatsApp",placeholder:"Explica los hechos de forma clara y precisa..."},
+pt:{sub:"SUPORTE GRATUITO • CENTRAL DE DENÚNCIAS",notice:"Use este formulário apenas para descrever um problema real. Verifique os dados antes de enviar.",phone:"Número do WhatsApp da conta denunciada",email:"Seu e-mail (opcional)",details:"Detalhes da denúncia",report:"✉️ Denunciar por e-mail",info:"O botão abre seu aplicativo de e-mail com a denúncia preenchida. Ele não envia automaticamente.",settings:"⚙️ Configurações",free:"♧ SUPORTE GRATUITO",dev:"✈️ Contactar o dev",wa:"💬 Junte-se ao meu WhatsApp",placeholder:"Explique os fatos de forma clara e precisa..."},
+de:{sub:"KOSTENLOSER SUPPORT • MELDEZENTRUM",notice:"Verwende dieses Formular nur für ein echtes Problem. Prüfe die Angaben vor dem Senden.",phone:"WhatsApp-Nummer des gemeldeten Kontos",email:"Deine E-Mail-Adresse (optional)",details:"Details der Meldung",report:"✉️ Per E-Mail melden",info:"Die Schaltfläche öffnet deine E-Mail-App mit der vorbereiteten Meldung. Sie sendet sie nicht automatisch.",settings:"⚙️ Einstellungen",free:"♧ KOSTENLOSER SUPPORT",dev:"✈️ Dev kontaktieren",wa:"💬 Meinem WhatsApp beitreten",placeholder:"Beschreibe die Fakten klar und genau..."},
+it:{sub:"SUPPORTO GRATUITO • CENTRO SEGNALAZIONI",notice:"Usa questo modulo solo per descrivere un problema reale. Controlla i dati prima dell'invio.",phone:"Numero WhatsApp dell'account segnalato",email:"La tua e-mail (facoltativa)",details:"Dettagli della segnalazione",report:"✉️ Segnala via e-mail",info:"Il pulsante apre l'app e-mail con la segnalazione compilata. Non la invia automaticamente.",settings:"⚙️ Impostazioni",free:"♧ SUPPORTO GRATUITO",dev:"✈️ Contatta il dev",wa:"💬 Unisciti al mio WhatsApp",placeholder:"Spiega i fatti in modo chiaro e preciso..."},
+tr:{sub:"ÜCRETSİZ DESTEK • RAPOR MERKEZİ",notice:"Bu formu yalnızca gerçek bir sorunu açıklamak için kullan. Göndermeden önce bilgileri kontrol et.",phone:"Bildirilen hesabın WhatsApp numarası",email:"E-posta adresin (isteğe bağlı)",details:"Rapor ayrıntıları",report:"✉️ E-posta ile bildir",info:"Düğme, hazırlanmış raporla e-posta uygulamanı açar. Otomatik olarak göndermez.",settings:"⚙️ Ayarlar",free:"♧ ÜCRETSİZ DESTEK",dev:"✈️ Geliştiriciyle iletişim",wa:"💬 WhatsApp'ıma katıl",placeholder:"Olayları açık ve doğru şekilde açıklayın..."},
+ar:{sub:"دعم مجاني • مركز البلاغات",notice:"استخدم هذا النموذج لوصف مشكلة حقيقية فقط. تحقق من المعلومات قبل الإرسال.",phone:"رقم واتساب للحساب المُبلّغ عنه",email:"بريدك الإلكتروني (اختياري)",details:"تفاصيل البلاغ",report:"✉️ الإبلاغ عبر البريد",info:"يفتح الزر تطبيق البريد مع بلاغ مُعد مسبقًا. لا يتم الإرسال تلقائيًا.",settings:"⚙️ الإعدادات",free:"♧ دعم مجاني",dev:"✈️ تواصل مع المطور",wa:"💬 انضم إلى واتساب الخاص بي",placeholder:"اشرح الوقائع بوضوح ودقة..."},
+sw:{sub:"MSAADA WA BURE • KITUO CHA RIPOTI",notice:"Tumia fomu hii kueleza tatizo halisi pekee. Kagua taarifa kabla ya kutuma.",phone:"Nambari ya WhatsApp ya akaunti iliyoripotiwa",email:"Barua pepe yako (hiari)",details:"Maelezo ya ripoti",report:"✉️ Ripoti kwa barua pepe",info:"Kitufe hufungua programu ya barua pepe ikiwa na ripoti iliyoandaliwa. Haitumi kiotomatiki.",settings:"⚙️ Mipangilio",free:"♧ MSAADA WA BURE",dev:"✈️ Wasiliana na dev",wa:"💬 Jiunge na WhatsApp yangu",placeholder:"Eleza ukweli kwa uwazi na usahihi..."},
+ln:{sub:"LISUSU YA OFELE • CENTRE YA RAPPORT",notice:"Salelá formulaire oyo mpo na likambo ya solo kaka. Talá makambo liboso ya kotinda.",phone:"Numero WhatsApp ya compte oyo ozali kopesa rapport",email:"Email na yo (optionnel)",details:"Makambo ya rapport",report:"✉️ Tinda rapport na email",info:"Bouton ekofungola application ya email na rapport oyo ebongisami. Ekotinda yango automatiquement te.",settings:"⚙️ Paramètres",free:"♧ LISUSU YA OFELE",dev:"✈️ Benga dev",wa:"💬 Kota na WhatsApp na ngai",placeholder:"Limbolá likambo polele mpe na bosolo..."},
+zh:{sub:"免费支持 • 举报中心",notice:"仅使用此表单描述真实问题。发送前请检查信息。",phone:"被举报账户的 WhatsApp 号码",email:"你的电子邮箱（可选）",details:"举报详情",report:"✉️ 通过电子邮件举报",info:"按钮会打开已填写报告的电子邮件应用，不会自动发送。",settings:"⚙️ 设置",free:"♧ 免费支持",dev:"✈️ 联系开发者",wa:"💬 加入我的 WhatsApp",placeholder:"清楚准确地说明事实..."},
+ja:{sub:"無料サポート • 報告センター",notice:"このフォームは実際の問題を説明するためだけに使用してください。送信前に情報を確認してください。",phone:"報告するアカウントのWhatsApp番号",email:"メールアドレス（任意）",details:"報告の詳細",report:"✉️ メールで報告",info:"ボタンを押すと、報告内容を入力したメールアプリが開きます。自動送信はしません。",settings:"⚙️ 設定",free:"♧ 無料サポート",dev:"✈️ 開発者に連絡",wa:"💬 WhatsAppに参加",placeholder:"事実を明確かつ正確に説明してください..."}
+};
+const templates={
+harassment:"Bonjour l’équipe WhatsApp aidé moi s'il vous plaît 😭😭,\\n\\n veillez bien lire et comprendre ce si s'il vous plaît 😭 Je souhaite signaler un compte qui semble utiliser WhatsApp pour du harcèlement ou des comportements abusifs.\\n\\nNuméro du compte concerné : {phone}\\n\\nDescription des faits :\\n{details}\\n\\nJe vous transmets ces informations afin que vous puissiez examiner la situation conformément à vos règles. Je confirme que les informations fournies sont exactes à ma connaissance.\\n\\nMerci de vérifier ce signalement.",
+scam:"Bonjour l’équipe WhatsApp,\\n\\nJe souhaite signaler un compte qui semble être impliqué dans une tentative d’arnaque ou d’escroquerie.\\n\\nNuméro du compte concerné : {phone}\\n\\nDescription des faits :\\n{details}\\n\\nMerci d’examiner les éléments signalés et de prendre les mesures appropriées si une violation est constatée. Je confirme que les informations fournies sont exactes à ma connaissance.",
+fraud:"Bonjour l’équipe WhatsApp,\\n\\nJe souhaite signaler un compte pour une activité qui semble frauduleuse ou liée à une usurpation d’identité.\\n\\nNuméro du compte concerné : {phone}\\n\\nDescription des faits :\\n{details}\\n\\nMerci de vérifier ce compte et les éléments fournis. Je confirme que les informations de ce rapport sont exactes à ma connaissance.",
+spam:"Bonjour l’équipe WhatsApp,\\n\\nJe souhaite signaler un compte qui semble envoyer des messages non sollicités ou du spam de manière répétée.\\n\\nNuméro du compte concerné : {phone}\\n\\nDescription des faits :\\n{details}\\n\\nMerci d’examiner ce signalement conformément aux règles applicables. Je confirme que les informations fournies sont exactes à ma connaissance."
+};
+function applyLang(){
+ const t=translations[$("#langSelect").value]||translations.fr;
+ $("#subtitle").textContent=t.sub;$("#notice").textContent=t.notice;$("#phoneLabel").textContent=t.phone;
+ $("#emailLabel").textContent=t.email;$("#detailsLabel").textContent=t.details;$("#reportBtn").textContent=t.report;
+ $("#emailInfo").textContent=t.info;$("#settingsTitle").textContent=t.settings;$("#freeSupport").textContent=t.free;
+ $("#devBtn").textContent=t.dev;$("#waBtn").textContent=t.wa;$("#details").placeholder=t.placeholder;
+ document.documentElement.lang=$("#langSelect").value;
+}
+function toast(msg){const x=$("#toast");x.textContent=msg;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),2200)}
+function loadSettings(){
+ $("#siteName").textContent=data.name||defaultData.name;$("#nameInput").value=data.name||"";
+ $("#telegramLink").value=data.telegram||"";$("#whatsappLink").value=data.whatsapp||"";
+ $("#supportEmail").value=data.email||defaultData.email;
+}
+loadSettings();applyLang();
+
+document.querySelectorAll(".cause").forEach(btn=>btn.onclick=()=>{
+ document.querySelectorAll(".cause").forEach(b=>b.classList.remove("active"));btn.classList.add("active");selected=btn.dataset.key;
+});
+$("#menuBtn").onclick=()=>$("#drawer").classList.add("show");
+$("#closeBtn").onclick=()=>$("#drawer").classList.remove("show");
+$("#drawer").onclick=e=>{if(e.target===$("#drawer"))$("#drawer").classList.remove("show")};
+$("#langSelect").onchange=applyLang;
+
+$("#saveBtn").onclick=()=>{
+ data.name=$("#nameInput").value.trim()||"THE GLITCH DEV";
+ data.telegram=$("#telegramLink").value.trim()||"https://t.me/";
+ data.whatsapp=$("#whatsappLink").value.trim()||"https://whatsapp.com/channel/";
+ data.email=$("#supportEmail").value.trim()||defaultData.email;
+ localStorage.setItem("glitchSupportSettings",JSON.stringify(data));loadSettings();toast("Réglages enregistrés ✓");
+};
+
+$("#reportBtn").onclick=()=>{
+ const phone=$("#phone").value.trim(), details=$("#details").value.trim(), sender=$("#senderEmail").value.trim();
+ if(!phone){toast("Ajoute le numéro WhatsApp.");$("#phone").focus();return}
+ if(!details){toast("Décris le problème.");$("#details").focus();return}
+ const body=templates[selected].replace("{phone}",phone).replace("{details}",details)+(sender?`\\n\\nMon adresse e-mail : ${sender}`:"");
+ const subjects={harassment:"Signalement WhatsApp — Harcèlement",scam:"Signalement WhatsApp — Arnaque",fraud:"Signalement WhatsApp — Fraude",spam:"Signalement WhatsApp — Spam"};
+ const url=`mailto:${encodeURIComponent(data.email||defaultData.email)}?subject=${encodeURIComponent(subjects[selected])}&body=${encodeURIComponent(body)}`;
+ location.href=url;
+};
+
+$("#devBtn").onclick=()=>{
+ const u=data.telegram||"https://t.me/";
+ if(u && u!=="https://t.me/") location.href=u; else toast("Ajoute ton lien Telegram dans ⋮ → Paramètres.");
+};
+$("#waBtn").onclick=()=>{
+ const u=data.whatsapp||"https://whatsapp.com/channel/";
+ if(u && u!=="https://whatsapp.com/channel/") location.href=u; else toast("Ajoute ton lien WhatsApp dans ⋮ → Paramètres.");
+};
+
+function fileURL(input,cb){
+ const f=input.files?.[0]; if(!f)return; if(window._urls)window._urls.push(URL.createObjectURL(f));
+ cb(URL.createObjectURL(f),f.type);
+}
+$("#bgFile").onchange=()=>fileURL($("#bgFile"),(url,type)=>{
+ const v=$("#bg"); v.pause();v.removeAttribute("src"); v.style.display="block";
+ if(type.startsWith("video/")){v.src=url;v.play().catch(()=>{})}
+ else{
+   v.style.display="none";document.body.style.backgroundImage=`url("${url}")`;
+   document.body.style.backgroundSize="cover";document.body.style.backgroundAttachment="fixed";
+ }
+ localStorage.setItem("glitchBG","");toast("Fond chargé ✓");
+});
+$("#musicFile").onchange=()=>fileURL($("#musicFile"),url=>{
+ $("#music").src=url; $("#music").play().then(()=>toast("Musique activée ✓")).catch(()=>toast("Appuie sur ▶️ Musique."));
+});
+$("#musicToggle").onclick=()=>{
+ const m=$("#music"); if(!m.src){toast("Choisis d'abord une musique.");return}
+ if(m.paused){m.play();$("#musicToggle").textContent="⏸️ Musique"}else{m.pause();$("#musicToggle").textContent="▶️ Musique"}
+};
+$("#resetMedia").onclick=()=>{document.body.style.backgroundImage="";$("#bg").removeAttribute("src");$("#music").pause();$("#music").removeAttribute("src");toast("Médias réinitialisés ✓")};
+
+// Fond animé : particules + silhouette abstraite, sans dépendance externe.
+const c=$("#particles"),ctx=c.getContext("2d");let pts=[];
+function resize(){c.width=innerWidth;c.height=innerHeight;pts=Array.from({length:70},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.8+.4,v:Math.random()*.35+.08}))}
+function draw(){
+ ctx.clearRect(0,0,c.width,c.height);
+ const t=Date.now()/1800;
+ for(const p of pts){p.y-=p.v;if(p.y<0)p.y=c.height;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle="rgba(180,130,255,.32)";ctx.fill()}
+ ctx.save();ctx.translate(c.width*.5,c.height*.54);ctx.rotate(Math.sin(t)*.015);
+ ctx.globalAlpha=.07;ctx.fillStyle="#b46aff";ctx.beginPath();ctx.ellipse(0,0,100,180,0,0,Math.PI*2);ctx.fill();
+ ctx.globalAlpha=.10;ctx.fillStyle="#000";ctx.beginPath();ctx.arc(0,-72,34,0,Math.PI*2);ctx.fill();
+ ctx.restore();requestAnimationFrame(draw)
+}
+addEventListener("resize",resize);resize();draw();
+</script>
+</body>
+</html>
